@@ -6,16 +6,18 @@ from datetime import datetime
 engine = create_engine('sqlite://database.db', echo=True) #this can be changes to the connection string of remote db
 Base = declerative_base()
 
+# Following will be the Database table - They are just declared and not yet actually created in the DB
+
 class Challenge(Base):
     __tablename__ = 'challenges'
 
     # var = Column(data-type, properties)
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True) 
     difficulty = Column(String, nullable=False)
     date_created = Column(DateTime, default=datetime.now)
     created_by = Column(String, nullable=False)
     title = Column(String, nullable=False)
-    options = Column(String, nullable=False)
+    options = Column(list[String], nullable=False)
     correct_answer_id = Column(Integer, nullable=False)
     explaination = Column(String, nullable=False)
 
