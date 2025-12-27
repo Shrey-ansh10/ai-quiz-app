@@ -35,15 +35,20 @@ def create_challenge(
     title: str,
     options: list[str],
     correct_answer_id: int,
-    explaination: str,
+    explanation: str,
+    description: str = None,
+    code_snippet: str = None,
 ):
+    import json
     db_challenge = models.Challenge(
         difficulty=difficulty,
         created_by=created_by,
         title=title,
-        options=options,
+        description=description,
+        code_snippet=code_snippet,
+        options=json.dumps(options),  # Serialize list to JSON string
         correct_answer_id=correct_answer_id,
-        explaination=explaination
+        explanation=explanation
     )
     db.add(db_challenge)
     db.commit()
