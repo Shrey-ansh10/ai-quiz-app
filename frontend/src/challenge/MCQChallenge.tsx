@@ -35,7 +35,7 @@ export default function MCQChallenge({challenge, showExplaination = false}) {
     const getOptionClass = (index) => {
         if(selectedOption === null) return "option" 
 
-        if(index === challenge.correct_answer_id) return "option-correct";
+        if(index === challenge.correct_answer_id) return "option correct";
 
         if(selectedOption === index && index !== challenge.correct_answer_id) return "option incorrect";
 
@@ -47,7 +47,9 @@ export default function MCQChallenge({challenge, showExplaination = false}) {
         <>
             <div className="challenge-display">
                 <p><strong>Difficulty</strong>: {challenge.difficulty}</p>
-                <p className="challenge-tittle">{challenge.title}</p>
+                <p className="challenge-tittle"><strong>Title: </strong>{challenge.title}</p>
+                <p><strong>Question: </strong>{challenge.description}</p>
+                <p>{challenge.code_snippit}</p>
                 <div className="option">
                     {options.map((option, index) => (
                         <div
@@ -62,8 +64,8 @@ export default function MCQChallenge({challenge, showExplaination = false}) {
 
                 {shouldShowExplaination && selectedOption !== null && (
                     <div className = "explaination">
-                        <h4>Explaination</h4>
-                        <p>{challenge.explaination}</p>
+                        <h4>Explaination : </h4>
+                        <p>{challenge.explanation}</p>
                     </div>
                 )}
             </div>

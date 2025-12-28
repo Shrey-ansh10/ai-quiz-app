@@ -1,12 +1,14 @@
 import "react"
 import { useState, useEffect } from "react"
 import MCQChallenge from "../challenge/MCQChallenge";
+import {useApi} from "../utils/api.js"
 
 export default function HistoryPanel(){
     
     const [history, setHistory] = useState([]); // an array
     const [isLoading, setIsLoading] = useState(true); // boolean
     const [error, setError] = useState(null); // 
+    const {makeRequest} = useApi(); 
 
     // this will run as soon as the component mounts
     useEffect(()=>{
@@ -16,7 +18,17 @@ export default function HistoryPanel(){
 
     // function to retrieve the history
     const fetchHistory = async () => {
-        setIsLoading(false);
+        setIsLoading(true);
+        setError(null)
+
+        try{
+            const data = await makeRequest("challenges/my-history")
+            setHistory(data.challenge)
+        } catch(err){
+            setError(err.message || "Failed to load history.")
+        } finally {
+            setIsLoading(false)
+        }
     }
 
     // when the async function is loading/fetching history - we 
