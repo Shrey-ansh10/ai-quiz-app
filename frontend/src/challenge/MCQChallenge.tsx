@@ -49,7 +49,12 @@ export default function MCQChallenge({challenge, showExplaination = false}) {
                 <p><strong>Difficulty</strong>: {challenge.difficulty}</p>
                 <p className="challenge-tittle"><strong>Title: </strong>{challenge.title}</p>
                 <p><strong>Question: </strong>{challenge.description}</p>
-                <p>{challenge.code_snippit}</p>
+                {/* <p>{challenge.code_snippet}</p> */}
+                {challenge.code_snippet && (
+                    <pre className="code-snippet">
+                        <code>{challenge.code_snippet}</code>
+                    </pre>
+                )}
                 <div className="option">
                     {options.map((option, index) => (
                         <div
