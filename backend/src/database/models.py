@@ -21,7 +21,7 @@ class Challenge(Base):
     code_snippet = Column(Text, nullable=True)  # Optional code snippet
     options = Column(Text, nullable=False)  # Store as JSON string
     correct_answer_id = Column(Integer, nullable=False)
-    explanation = Column(Text, nullable=False)  # Fixed typo: explaination -> explanation
+    explanation = Column(Text, nullable=False)  
 
 
 class ChallengeQuota(Base):
