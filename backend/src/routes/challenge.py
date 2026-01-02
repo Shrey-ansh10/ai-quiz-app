@@ -19,9 +19,9 @@ class ChallengeRequest(BaseModel):
 
 # post endpoint to generate challenge
 @router.post("/generate-challenge")
-async def generate_challenge(request: ChallengeRequest, db: Session = Depends(get_db)):
+async def generate_challenge(request: ChallengeRequest, request_obj: Request,  db: Session = Depends(get_db)):
     try:
-        user_details = authenticate_and_get_user_details(request)
+        user_details = authenticate_and_get_user_details(request_obj)
         user_id = user_details.get("user_id")
 
         quota = get_challenge_quota(db, user_id)
@@ -39,14 +39,14 @@ async def generate_challenge(request: ChallengeRequest, db: Session = Depends(ge
             db=db,
             difficulty=request.difficulty,
             created_by=user_id,
-            **challenge_data
+            challenge_data=challenge_data
         )
 
         quota.remaining_quota -= 1
         db.commit()
         return {
             "id": new_challenge.id,
-            "difficulty": request.difficulty,
+            "difficulty": request.difficulty, 
             "title": new_challenge.title,
             "description": new_challenge.description,
             "code_snippet": new_challenge.code_snippet,
@@ -76,10 +76,24 @@ async def get_quota(request: Request, db: Session = Depends(get_db)):
 
     quota = get_challenge_quota(db, user_id)
     if not quota:
-        return{
-            "user_id": user_id,
-            "remaining_quota": 0,
-            "last_reset_date": datetime.now()
-        }
+        # Create quota for new users if it doesn't exist
+        quota = create_challenge_quota(db, user_id)
+        # Ensure quota is properly initialized
+        if quota.remaining_quota <= 0:
+            quota.remaining_quota = 25
+            db.commit()
+            db.refresh(quota)
+    
     quota = reset_quota_if_needed(db, quota)
-    return quota
+    
+    # Final safeguard: ensure quota is never negative
+    if quota.remaining_quota < 0:
+        quota.remaining_quota = 0
+        db.commit()
+        db.refresh(quota)
+    
+    return {
+        "user_id": quota.user_id,
+        "remaining_quota": quota.remaining_quota,
+        "last_reset_date": quota.last_reset_date.isoformat() if quota.last_reset_date else None
+    }
